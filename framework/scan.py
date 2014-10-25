@@ -9,6 +9,7 @@ BINARY = True
 NONWORDS = re.compile('[\W_]+')
 STOPWORDS = stopwords.words('english')
 
+
 # read in a file
 def scan(filename, exclude_stopwords = False, binary_label = False):
     data = []
