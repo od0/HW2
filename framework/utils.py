@@ -1,7 +1,7 @@
-INPUT_FILE1 = ('/Users/sean/Sync/cornell/modern-analytics-fall-2014/'
-  'hw2-bucket/data/finefoods-small.txt')
-INPUT_FILE2 = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
+INPUT_FILE_SAMPLE = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
                'hw2-bucket/data/finefoods-small.txt')
+INPUT_FILE = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
+               'hw2-bucket/data/finefoods.txt')
 
 REVIEW_INDEX = 0
 SCORE_INDEX = 1

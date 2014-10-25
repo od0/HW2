@@ -4,13 +4,13 @@ import utils
 
 def problem2a(data):
     sample = data.pop()
-    label = scan.score_to_binary(sample[utils.SCORE_INDEX])
+    label = sample[utils.SCORE_INDEX]
     print '2a) Example review and label pair from sample data: '
     print ('\tReview: %s' % sample[utils.REVIEW_INDEX])
     print ('\tLabel: %s (%s)' % (label, utils.LABEL_DESC[label]))
 
 
-def problem2b(data):
+def problem2b_and_c(data):
     unigrams_list = [
         utils.get_unigram(sample[utils.REVIEW_INDEX])
         for sample in data
@@ -18,18 +18,18 @@ def problem2b(data):
 
     positive_counts, top_positive = aggregate_unigrams(
         [bucket for i, bucket in enumerate(unigrams_list)
-         if scan.score_to_binary(data[i][utils.SCORE_INDEX])],
+         if data[i][utils.SCORE_INDEX]],
         30)
 
     negative_counts, top_negative = aggregate_unigrams(
         [bucket for i, bucket in enumerate(unigrams_list)
-         if not scan.score_to_binary(data[i][utils.SCORE_INDEX])],
+         if not data[i][utils.SCORE_INDEX]],
         30)
 
-    print 'Top words in positive reviews:'
+    print '\tPositive reviews:'
     print_top_words(top_positive)
     print
-    print 'Top words in negative reviews:'
+    print '\tNegative reviews:'
     print_top_words(top_negative)
 
 
@@ -70,15 +70,25 @@ def print_top_words(top_words):
 
 def main():
     binary_label = True
+    infile = utils.INPUT_FILE
 
-    data = scan.scan(utils.INPUT_FILE2, binary_label)
+    data = scan.scan(infile, exclude_stopwords=False, binary_label=binary_label)
     length = len(data)
 
     train_data = data[:int(length*.8)]
     test_data = data[int(length*.8):]
 
     problem2a(data)
-    problem2b(data)
+
+    print
+    print 'Top words'
+    problem2b_and_c(data)
+
+    print
+    print
+    print 'Top words (exlcuding Stopwords)'
+    data = scan.scan(infile, exclude_stopwords=True, binary_label=binary_label)
+    problem2b_and_c(data)
 
     #decision_tree = dt.train(train_data)
     #test_results = dt.test(decision_tree, test_data)
