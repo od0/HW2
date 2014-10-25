@@ -34,9 +34,9 @@ def problem2b(data):
 
 
 def aggregate_unigrams(unigram_list, top_num):
-    word_counts = {}
-    #top_words = [{str(i): 0} for i in range(top_num)]
+    # Dummy list
     top_words = [('', 0) for i in range(top_num)]
+    word_counts = {}
     min_count = 0
     for record in unigram_list:
         for word, count in record[utils.UNIGRAMS_INDEX].iteritems():
@@ -50,11 +50,13 @@ def update_top_words(word_counts, word, top_words):
     # Check whether word exists in top_words already
     match_index = [i for (i, top) in enumerate(top_words) if word in top]
 
-    # Update the count in top words if it does appear in top_words
     new_top = (word, word_counts[word])
     if match_index:
+        # Update the count in top words if it does appear in top_words
         top_words[match_index.pop()] = new_top
+        top_words.sort(key=(lambda x: x[1]), reverse=True)
     else:
+        # Otherwise, add the new word and drop off the word with the lowest count
         top_words.append(new_top)
         top_words.sort(key=(lambda x: x[1]), reverse=True)
         top_words.pop()
