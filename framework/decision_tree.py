@@ -1,5 +1,6 @@
 import scan
-import util
+import utils
+from scikits
 
 class DecisionTree:
     node_label = None  # takes the values 0, 1, None. If has the values 0 or 1, then this is a leaf

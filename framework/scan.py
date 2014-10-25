@@ -1,9 +1,10 @@
 import re, string
+import itertools
+
 import nltk
 from nltk.corpus import stopwords
 
 # constants
-LINES_PER_REVIEW = 8
 BINARY = True
 NONWORDS = re.compile('[\W_]+')
 STOPWORDS = stopwords.words('english')
@@ -12,24 +13,35 @@ STOPWORDS = stopwords.words('english')
 def scan(filename, exclude_stopwords = False, binary_label = False):
     data = []
     with open(filename, 'r') as f:
-        elements = []
-        for i in range(LINES_PER_REVIEW):
-            elements.append(f.readline().split(':', 1)[1])
+        while True:
+            elements = {}
 
-        review = (elements[6] + ' ' + elements[7])
-        review = ' '.join(re.split(NONWORDS, review))
-        review = review.strip().lower()
+            for line in f:
+                if line == '\n':
+                    break
+                try:
+                    key, value = line.split(':', 1)
+                    elements[key] = value
+                except:
+                    pass
 
-        if exclude_stopwords:
-            review = ' '.join([w for w in review.split() if w not in STOPWORDS])
+            if not elements:
+                break
 
-        score = float(elements[4].strip())
+            review = (elements['review/summary'] + ' ' + elements['review/text'])
+            review = ' '.join(re.split(NONWORDS, review))
+            review = review.strip().lower()
 
-        if binary_label:
-            score = score_to_binary(score)
+            if exclude_stopwords:
+                review = ' '.join([w for w in review.split() if w not in STOPWORDS])
 
-        datum = [review, score]
-        data.append(datum)
+            score = float(elements['review/score'].strip())
+
+            if binary_label:
+                score = score_to_binary(score)
+
+            datum = [review, score]
+            data.append(datum)
     return data
 
 def score_to_binary(score):

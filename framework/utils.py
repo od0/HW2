@@ -10,7 +10,7 @@ def freq(lst):
     freq = {}
     length = len(lst)
     for ele in lst:
-        if gram not in freq:
+        if ele not in freq:
             freq[ele] = 0
         freq[ele] += 1
     return (freq, length)
@@ -19,4 +19,4 @@ def get_unigram(review):
     return freq(review.split())
 
 def get_unigram_list(review):
-    return get_unigram(review).keys()
+    return get_unigram(review)[0].keys()
