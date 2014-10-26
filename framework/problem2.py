@@ -1,5 +1,6 @@
 from collections import OrderedDict
-
+import logging
+logging.basicConfig(filename='logs/decision.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 import utils
 import scan
 import config
@@ -72,12 +73,15 @@ def problem2c(data):
 
 
 def problem2e(train_data, test_data):
+    print 'Beginning decision tree training using ID3 algorithm'
     review_samples = generate_unigrams(train_data)
     positive_counts, top_positive = samples_by_label(review_samples, 500, 1)
     negative_counts, top_negative = samples_by_label(review_samples, 500, 0)
+
     feature_set = derive_features(top_positive, top_negative)
-    print
-    print 'Starting H(S) = %0.5f' % utils.entropy([sample.rating for sample in review_samples])
+    print ('\tDecision tree feature/attribute set includes %d total words' % len(feature_set))
+    print ('\tStarting entropy of the review set with %d samples is %0.5f' %
+           (len(review_samples), utils.entropy([sample.rating for sample in review_samples])))
 
     return decision_tree.train(review_samples, feature_set)
 
@@ -86,15 +90,14 @@ def derive_features(positive_counts, negative_counts):
     features = set()
     features = features.union([word for word, count in positive_counts.iteritems()],
                               [word for word, count in negative_counts.iteritems()])
-    '''feature_counts = {}
-    for word in features:
-        feature_counts[word] = (positive_counts.setdefault(word, 0) +
-                                negative_counts.setdefault(word, 0))'''
     return features
 
 
 def problem2f(test_data, d_tree):
-    return decision_tree.test(test_data, d_tree)
+    print 'Beginning to test %d review samples with decision tree' % len(test_data)
+    review_samples = generate_unigrams(test_data)
+    decision_tree.test(review_samples, d_tree)
+    return review_samples
 
 
 RUN_FILTER = {
@@ -103,12 +106,11 @@ RUN_FILTER = {
     '2b': False,
     '2c': False,
     '2e': True,
-    '2f': False
+    '2f': True
 }
 
 
 def main():
-    #binary_label = True
     if RUN_FILTER['full']:
         infile = config.INPUT_FILE
     else:
@@ -117,14 +119,11 @@ def main():
     data, data_filtered, train_data, test_data = None, None, None, None
     if RUN_FILTER['2a'] or RUN_FILTER['2b']:
         data = scan.scan(infile, exclude_stopwords=False, binary_label=True)
-        #length = len(data)
     if RUN_FILTER['2c'] or RUN_FILTER['2e'] or RUN_FILTER['2f']:
         data_filtered = scan.scan(infile, exclude_stopwords=True, binary_label=True)
         length = len(data_filtered)
         train_data = data_filtered[:int(length*.8)]
         test_data = data_filtered[int(length*.8):]
-
-    #data = scan.scan(infile, exclude_stopwords=False, binary_label=True)
 
     if RUN_FILTER['2a']:
         problem2a(data, 10)
@@ -137,8 +136,9 @@ def main():
 
     if RUN_FILTER['2e'] or RUN_FILTER['2f']:
         d_tree = problem2e(train_data, test_data)
+        print '\tFinished training decision tree'
         if RUN_FILTER['2f']:
-            results = problem2f(test_data, d_tree)
+            test_results = problem2f(test_data, d_tree)
 
     #decision_tree = dt.train(train_data)
     #test_results = dt.test(decision_tree, test_data)

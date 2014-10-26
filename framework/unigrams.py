@@ -8,6 +8,8 @@ class ReviewSample(object):
         self.unigrams = unigrams[config.UNIGRAMS_INDEX]
         self.word_count = unigrams[config.WORD_COUNT_INDEX]
         self.rating = datum[config.SCORE_INDEX]
+        self.predicted_rating = None
+
 
     @property
     def word_list(self):
