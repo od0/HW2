@@ -2,16 +2,16 @@ import utils
 
 
 class DecisionTree(object):
-    def __init__(self, review_samples, feature_set, desc=None):
+    def __init__(self, review_samples, feature_set, depth=0, desc=None):
         # node_label takes the values 0, 1, None. If has the values 0 or 1, then this is a leaf
         self.node_label = None
         self.left = None
         self.right = None
+        self.depth = depth
         self.split_word = None
         if desc:
             self.desc = desc
-        self.decision(review_samples, feature_set)
-        #self.split(review_set, features)
+        self.decision(review_samples, feature_set, depth)
 
     def is_label(self):
         return self.node_label == 0 or self.node_label == 1
@@ -22,8 +22,10 @@ class DecisionTree(object):
             raise AttributeError("Ivalid label: %d. Decision tree label must be 0 or 1." % max_label)
         self.node_label = max_label
 
-    def decision(self, review_set, features):
+    def decision(self, review_set, features, depth):
         entropy = utils.entropy([sample.rating for sample in review_set])
+        if len(review_set) == 2033:
+            print
 
         if 1 > entropy > 0:
             full_set_length = len(review_set)
@@ -39,13 +41,22 @@ class DecisionTree(object):
                 #info_gain_features[word] = (info_gain, left_set, right_set)
 
             # Exclude this word/attribute
-            self.split_word = max_info_gain[1]
-            features.remove(self.split_word)
-            print 'Splitting on %s (info gain %0.5f)' % (self.split_word, max_info_gain[0])
-            if max_info_gain[2]:
-                self.left = DecisionTree(max_info_gain[2], features, '%s appears' % self.split_word)
-            if max_info_gain[3]:
-                self.right = DecisionTree(max_info_gain[3], features, '%s does not appear' % self.split_word)
+            try:
+                self.split_word = max_info_gain[1]
+                features.remove(self.split_word)
+                print '\tSplitting on %s (info gain %0.5f, branch size %d)' % (
+                    self.split_word, max_info_gain[0], len(review_set)
+                )
+                if max_info_gain[2]:
+                    self.left = DecisionTree(max_info_gain[2], features,
+                                             depth=depth+1, desc='%s appears' % self.split_word)
+                if max_info_gain[3]:
+                    self.right = DecisionTree(max_info_gain[3], features,
+                                              depth=depth+1, desc='%s does not appear' % self.split_word)
+            except KeyError as e:
+                print "\t\tError: %s\n\t\tEntropy: %0.10f\n\t\tReviews: %d\n\t\tFeatures: %d\n\t\tMax Info:%s" % (
+                    e, entropy, len(review_set), len(features), max_info_gain
+                )
         else:
             self._get_label(review_set)
 
@@ -58,12 +69,6 @@ class DecisionTree(object):
 
     def __repr__(self):
         return "<DecisionTree(%s)>" % (self.desc if self.desc else '')
-
-
-    #def go(self, data):
-        #if self.node_label is None:
-            #return self.node_label
-        #return self.go(self.decision(data))
 
 
 # http://en.wikipedia.org/wiki/ID3_algorithm

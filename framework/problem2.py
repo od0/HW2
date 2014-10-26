@@ -71,7 +71,7 @@ def problem2c(data):
     report_top_n_words(review_samples, 30)
 
 
-def problem2e(train_data):
+def problem2e(train_data, test_data):
     review_samples = generate_unigrams(train_data)
     positive_counts, top_positive = samples_by_label(review_samples, 500, 1)
     negative_counts, top_negative = samples_by_label(review_samples, 500, 0)
@@ -79,11 +79,7 @@ def problem2e(train_data):
     print
     print 'Starting H(S) = %0.5f' % utils.entropy([sample.rating for sample in review_samples])
 
-    dt_classifier = decision_tree.train(review_samples, feature_set)
-    print
-    print
-
-    #decision_tree.train(review_samples, feature_set)
+    return decision_tree.train(review_samples, feature_set)
 
 
 def derive_features(positive_counts, negative_counts):
@@ -95,6 +91,10 @@ def derive_features(positive_counts, negative_counts):
         feature_counts[word] = (positive_counts.setdefault(word, 0) +
                                 negative_counts.setdefault(word, 0))'''
     return features
+
+
+def problem2f(test_data, d_tree):
+    return decision_tree.test(test_data, d_tree)
 
 
 RUN_FILTER = {
@@ -135,8 +135,10 @@ def main():
     if RUN_FILTER['2c']:
         problem2c(data_filtered)
 
-    if RUN_FILTER['2e']:
-        problem2e(train_data)
+    if RUN_FILTER['2e'] or RUN_FILTER['2f']:
+        d_tree = problem2e(train_data, test_data)
+        if RUN_FILTER['2f']:
+            results = problem2f(test_data, d_tree)
 
     #decision_tree = dt.train(train_data)
     #test_results = dt.test(decision_tree, test_data)
