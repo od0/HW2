@@ -11,6 +11,7 @@ WORD_COUNT_INDEX = 1
 LABEL_DESC = ['Negative', 'Positive']
 
 RUN_FILTER = {
+    'debug': True,
     'full': True,
     '2a': True,
     '2b': True,

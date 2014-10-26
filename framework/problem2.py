@@ -1,12 +1,21 @@
 from __future__ import division
 from collections import OrderedDict
 import logging
-logging.basicConfig(filename='logs/decision.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+import datetime
+import time
+
 import utils
 import scan
 import config
 import decision_tree
 from unigrams import ReviewSample
+
+logStart = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+logging.basicConfig(
+    filename='logs/%s_decision.log' % logStart,
+    level=logging.DEBUG if config.RUN_FILTER['debug'] else logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 
 def problem2a(data, num):
@@ -119,6 +128,7 @@ def problem2f(test_data, d_tree):
 
 
 def main():
+    start = time.time()
     if config.RUN_FILTER['full']:
         infile = config.INPUT_FILE
     else:
@@ -159,6 +169,9 @@ def main():
         print '\tFinished training decision tree'
         if config.RUN_FILTER['2f']:
             problem2f(test_data, d_tree)
+
+    elapsed = time.time() - start
+    logging.debug('Finished in %s seconds' % elapsed)
 
 if __name__ == '__main__':
     main()

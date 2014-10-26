@@ -1,7 +1,15 @@
 import logging
-logging.basicConfig(filename='logs/decision.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+import datetime
 
+import config
 import utils
+
+logStart = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+logging.basicConfig(
+    filename='logs/%s_decision.log' % logStart,
+    level=logging.DEBUG if config.RUN_FILTER['debug'] else logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 
 class DecisionTree(object):
@@ -22,11 +30,12 @@ class DecisionTree(object):
     def set_label(self, review_set):
         num_positive = len([sample.rating for sample in review_set if sample.rating == 1])
         if num_positive / len(review_set) > 0.5:
-            logging.debug('Label=1 where %s at depth %d (%d elements)' % (self, self.depth, len(review_set)))
             self.node_label = 1
         else:
-            logging.debug('Label=0 where %s at depth %d (%d elements)' % (self.desc, self.depth, len(review_set)))
             self.node_label = 0
+        logging.debug('Set label=%d for %s at depth %d with %d items remaining in reviewset' % (
+            self.node_label, self.desc, self.depth, len(review_set)
+        ))
 
     def decision(self, review_set, features, depth):
         entropy = utils.entropy([sample.rating for sample in review_set])
@@ -40,7 +49,6 @@ class DecisionTree(object):
             for word in features:
                 left_labels, right_labels, left_indices = DecisionTree.split(word, review_set)
                 info_gain = utils.information_gain(entropy, full_set_length, left_labels, right_labels)
-                #logging.debug('\n\t\tWord:%s\n\t\tIG: %0.5f' % (word, info_gain))
                 if info_gain > max_info_gain[0]:
                     left_set = [sample for (i, sample) in enumerate(review_set) if i in left_indices]
                     right_set = [sample for (i, sample) in enumerate(review_set) if i not in left_indices]
@@ -58,21 +66,9 @@ class DecisionTree(object):
                 self.right = DecisionTree(max_info_gain[3], features,
                                           depth=depth+1, desc='\"%s\" does not appear' % self.split_word)
             else:
-                # None of the words provided info gain > 0
-                # Make this node a label. No further splitting is possible.
+                # None of the words provided info gain > 0. No further splitting is possible.
                 logging.debug('No measurable info gain for any of the %d remaining words' % len(features))
                 self.set_label(review_set)
-                '''num_positive = len([sample.rating for sample in review_set if sample.rating == 1])
-                logging.debug("\n\t\tError: %s\n\t\tEntropy: %0.10f\n\t\tNum Reviews: %d"
-                              "\n\t\tPositive/Total: %0.10f (%d)"
-                              "\n\t\tNegative/Total: %0.10f (%d)"
-                              "\n\t\tNum Features: %d\n\t\tMax Info:%s"
-                              "\n\t\tDT Desc: %s (%d depth)" % (
-                    e, entropy, len(review_set),
-                    num_positive / len(review_set), num_positive,
-                    (len(review_set) - num_positive) / len(review_set),  (len(review_set) - num_positive),
-                    len(features), max_info_gain, self.desc, self.depth
-                ))'''
         else:
             self.set_label(review_set)
 
