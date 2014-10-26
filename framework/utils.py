@@ -7,10 +7,14 @@ def entropy(class_set):
     total = len(class_set)
     positives = len([r for r in class_set if r])
     negatives = len([r for r in class_set if not r])
-    return - (
-        positives/total * math.log(positives/total) +
-        negatives/total * math.log(negatives/total)
-    )
+    if positives and negatives:
+        return - (
+            positives/total * math.log(positives/total) +
+            negatives/total * math.log(negatives/total)
+        )
+    else:
+        # If either positives or negatives is 0, this is a pure set (entropy=0)
+        return 0
 
 
 def information_gain(base_entropy, full_set_length, subset_left, subset_right):

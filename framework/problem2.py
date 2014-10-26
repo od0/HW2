@@ -80,6 +80,8 @@ def problem2e(train_data):
     print 'Starting H(S) = %0.5f' % utils.entropy([sample.rating for sample in review_samples])
 
     dt_classifier = decision_tree.train(review_samples, feature_set)
+    print
+    print
 
     #decision_tree.train(review_samples, feature_set)
 
@@ -88,13 +90,11 @@ def derive_features(positive_counts, negative_counts):
     features = set()
     features = features.union([word for word, count in positive_counts.iteritems()],
                               [word for word, count in negative_counts.iteritems()])
-
-    feature_counts = {}
+    '''feature_counts = {}
     for word in features:
         feature_counts[word] = (positive_counts.setdefault(word, 0) +
-                                negative_counts.setdefault(word, 0))
-
-    return feature_counts
+                                negative_counts.setdefault(word, 0))'''
+    return features
 
 
 RUN_FILTER = {
