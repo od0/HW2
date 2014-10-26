@@ -25,6 +25,8 @@ def problem2a(data, num):
         label = sample[config.SCORE_INDEX]
         print ('\tReview: %s' % sample[config.REVIEW_INDEX])
         print ('\tLabel: %s (%s)' % (label, config.LABEL_DESC[label]))
+    print
+    print
 
 
 def samples_by_label(review_samples, top_num, label=1):
@@ -69,21 +71,25 @@ def print_top_words(top_words):
 
 def problem2b(data):
     print
-    print 'Top words from %d sample reviews' % (len(data))
+    print '2b) Top words from %d sample reviews' % (len(data))
     review_samples = generate_unigrams(data)
     report_top_n_words(review_samples, 30)
+    print
+    print
 
 
 def problem2c(data):
     print
     print
     review_samples = generate_unigrams(data)
-    print 'Top words (excluding stopwords) from %d sample reviews' % (len(data))
+    print '2c) Top words (excluding stopwords) from %d sample reviews' % (len(data))
     report_top_n_words(review_samples, 30)
+    print
+    print
 
 
-def problem2e(train_data, test_data):
-    print 'Beginning decision tree training using ID3 algorithm'
+def problem2e(train_data):
+    print '2e) Beginning decision tree training using ID3 algorithm'
     review_samples = generate_unigrams(train_data)
     positive_counts, top_positive = samples_by_label(review_samples, 500, 1)
     negative_counts, top_negative = samples_by_label(review_samples, 500, 0)
@@ -92,6 +98,8 @@ def problem2e(train_data, test_data):
     print ('\tDecision tree feature/attribute set includes %d total words' % len(feature_set))
     print ('\tStarting entropy of the review set with %d samples is %0.5f' %
            (len(review_samples), utils.entropy([sample.rating for sample in review_samples])))
+    print
+    print
 
     return decision_tree.train(review_samples, feature_set)
 
@@ -104,7 +112,7 @@ def derive_features(positive_counts, negative_counts):
 
 
 def problem2f(test_data, d_tree):
-    print 'Predicting scores for test %d review samples with decision tree' % len(test_data)
+    print '2f) Predicting scores for test %d review samples with decision tree' % len(test_data)
     review_samples = generate_unigrams(test_data)
     decision_tree.test(review_samples, d_tree)
     total = len(test_data)
@@ -125,6 +133,8 @@ def problem2f(test_data, d_tree):
     print '\t%0.5f Positive Predictive Value (Precision)' % (true_positive / (true_positive + false_positive))
     print '\t%0.5f False Positive Rate (Fall-Out)' % (false_positive / (false_positive + true_negative))
     print '\t%0.5f False Negative Rate' % (false_negative / (true_positive + false_negative))
+    print
+    print
 
 
 def main():
@@ -165,7 +175,7 @@ def main():
         problem2c(data_filtered)
 
     if config.RUN_FILTER['2e'] or config.RUN_FILTER['2f']:
-        d_tree = problem2e(train_data, test_data)
+        d_tree = problem2e(train_data)
         print '\tFinished training decision tree'
         if config.RUN_FILTER['2f']:
             problem2f(test_data, d_tree)

@@ -39,13 +39,12 @@ class DecisionTree(object):
 
     def decision(self, review_set, features, depth):
         entropy = utils.entropy([sample.rating for sample in review_set])
-        if len(review_set) == 2033:
-            print
 
         if 1 > entropy > 0 and len(features) > 0:
             full_set_length = len(review_set)
             # max_info_gain contains (info_gain, word, left_set, right_set)
             max_info_gain = (0, None, None, None)
+
             for word in features:
                 left_labels, right_labels, left_indices = DecisionTree.split(word, review_set)
                 info_gain = utils.information_gain(entropy, full_set_length, left_labels, right_labels)
@@ -53,7 +52,7 @@ class DecisionTree(object):
                     left_set = [sample for (i, sample) in enumerate(review_set) if i in left_indices]
                     right_set = [sample for (i, sample) in enumerate(review_set) if i not in left_indices]
                     max_info_gain = (info_gain, word, left_set, right_set)
-            #try:
+
             if max_info_gain[0] > 0:
                 self.split_word = max_info_gain[1]
                 # Exclude this word/attribute
@@ -61,14 +60,24 @@ class DecisionTree(object):
                 logging.debug('Splitting on %s (info gain %0.5f, branch size %d)' % (
                     self.split_word, max_info_gain[0], len(review_set)
                 ))
-                self.left = DecisionTree(max_info_gain[2], features,
-                                         depth=depth+1, desc='\"%s\" appears' % self.split_word)
-                self.right = DecisionTree(max_info_gain[3], features,
-                                          depth=depth+1, desc='\"%s\" does not appear' % self.split_word)
+
+                # Create 2 new DTrees
+                self.left = DecisionTree(
+                    max_info_gain[2], features,
+                    depth=depth+1,
+                    desc='\"%s\" appears' % self.split_word
+                )
+                self.right = DecisionTree(
+                    max_info_gain[3], features,
+                    depth=depth+1,
+                    desc='\"%s\" does not appear' % self.split_word
+                )
+
             else:
                 # None of the words provided info gain > 0. No further splitting is possible.
                 logging.debug('No measurable info gain for any of the %d remaining words' % len(features))
                 self.set_label(review_set)
+
         else:
             self.set_label(review_set)
 
