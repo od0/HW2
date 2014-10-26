@@ -8,6 +8,8 @@ from nltk.corpus import stopwords
 BINARY = True
 NONWORDS = re.compile('[\W_]+')
 STOPWORDS = stopwords.words('english')
+# Adding 'br', which likely represents the </br> HTML tag
+STOPWORDS.append('br')
 
 
 # read in a file

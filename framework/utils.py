@@ -1,21 +1,27 @@
-INPUT_FILE_SAMPLE = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
-               'hw2-bucket/data/finefoods-small.txt')
-INPUT_FILE = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
-               'hw2-bucket/data/finefoods.txt')
+from __future__ import division
+import math
 
-REVIEW_INDEX = 0
-SCORE_INDEX = 1
-UNIGRAMS_INDEX = 0
-WORD_COUNT_INDEX = 1
-LABEL_DESC = ['Bad', 'Good']
-TREE_OUTFILE = 'decisiontree.pdf'
 
 # decision tree stuff
-def entropy():
-    raise 'not implemented'
+def entropy(class_set):
+    total = len(class_set)
+    positives = len([r for r in class_set if r])
+    negatives = len([r for r in class_set if not r])
+    return - (
+        positives/total * math.log(positives/total) +
+        negatives/total * math.log(negatives/total)
+    )
 
-def information_gain():
-    raise 'not implemented'
+
+def information_gain(full_set, subset_left, subset_right):
+    H_of_set, set_length = entropy(full_set), len(full_set)
+    H_of_left, left_length = entropy(subset_left), len(subset_left)
+    H_of_right, right_length = entropy(subset_right), len(subset_right)
+    return H_of_set - (
+        (left_length / set_length * H_of_left) +
+        (right_length / set_length * H_of_right)
+    )
+
 
 # natural language processing stuff
 def freq(lst):
@@ -27,8 +33,10 @@ def freq(lst):
         freq[ele] += 1
     return (freq, length)
 
+
 def get_unigram(review):
     return freq(review.split())
+
 
 def get_unigram_list(review):
     return get_unigram(review)[0].keys()
