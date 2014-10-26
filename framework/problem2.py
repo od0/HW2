@@ -1,3 +1,4 @@
+from __future__ import division
 from collections import OrderedDict
 import logging
 logging.basicConfig(filename='logs/decision.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -94,56 +95,70 @@ def derive_features(positive_counts, negative_counts):
 
 
 def problem2f(test_data, d_tree):
-    print 'Beginning to test %d review samples with decision tree' % len(test_data)
+    print 'Predicting scores for test %d review samples with decision tree' % len(test_data)
     review_samples = generate_unigrams(test_data)
     decision_tree.test(review_samples, d_tree)
-    return review_samples
-
-
-RUN_FILTER = {
-    'full': False,
-    '2a': False,
-    '2b': False,
-    '2c': False,
-    '2e': True,
-    '2f': True
-}
+    total = len(test_data)
+    true_positive = len([sample for sample in review_samples
+                         if sample.rating == 1 and sample.predicted_rating == 1])
+    false_positive = len([sample for sample in review_samples
+                         if sample.rating == 0 and sample.predicted_rating == 1])
+    true_negative = len([sample for sample in review_samples
+                         if sample.rating == 0 and sample.predicted_rating == 0])
+    false_negative = len([sample for sample in review_samples
+                         if sample.rating == 1 and sample.predicted_rating == 0])
+    print 'Finished testing samples'
+    print '%0.5f Oveall accuracy (%d/%d)' % (
+        (true_positive + true_negative) / total, true_positive + true_negative, total
+    )
+    print '\t%0.5f True Positive Rate (Sensitivity)' % (true_positive / (true_positive + false_negative))
+    print '\t%0.5f True Negative Rate (Specificity)' % (true_negative / (false_positive + true_negative))
+    print '\t%0.5f Positive Predictive Value (Precision)' % (true_positive / (true_positive + false_positive))
+    print '\t%0.5f False Positive Rate (Fall-Out)' % (false_positive / (false_positive + true_negative))
+    print '\t%0.5f False Negative Rate' % (false_negative / (true_positive + false_negative))
 
 
 def main():
-    if RUN_FILTER['full']:
+    if config.RUN_FILTER['full']:
         infile = config.INPUT_FILE
     else:
         infile = config.INPUT_FILE_SAMPLE
 
-    data, data_filtered, train_data, test_data = None, None, None, None
-    if RUN_FILTER['2a'] or RUN_FILTER['2b']:
-        data = scan.scan(infile, exclude_stopwords=False, binary_label=True)
-    if RUN_FILTER['2c'] or RUN_FILTER['2e'] or RUN_FILTER['2f']:
-        data_filtered = scan.scan(infile, exclude_stopwords=True, binary_label=True)
-        length = len(data_filtered)
-        train_data = data_filtered[:int(length*.8)]
-        test_data = data_filtered[int(length*.8):]
+    data = None
+    try:
+        if config.RUN_FILTER['2a'] or config.RUN_FILTER['2b']:
+            print 'Loading data from file'
+            data = scan.scan(infile, exclude_stopwords=False, binary_label=True)
+    except IOError as e:
+        print 'ERROR: Cannot open file %s. Please provide a valid INPUT_FILE in config.py\n%s' % (infile, e)
+        exit(1)
 
-    if RUN_FILTER['2a']:
+    if config.RUN_FILTER['2a']:
         problem2a(data, 10)
 
-    if RUN_FILTER['2b']:
+    if config.RUN_FILTER['2b']:
         problem2b(data)
 
-    if RUN_FILTER['2c']:
+    data_filtered, train_data, test_data = None, None, None
+    try:
+        if config.RUN_FILTER['2c'] or config.RUN_FILTER['2e'] or config.RUN_FILTER['2f']:
+            print 'Loading data from file (excluding stopwords)'
+            data_filtered = scan.scan(infile, exclude_stopwords=True, binary_label=True)
+            length = len(data_filtered)
+            train_data = data_filtered[:int(length*.8)]
+            test_data = data_filtered[int(length*.8):]
+    except IOError as e:
+        print 'ERROR: Cannot open file %s. Please provide a valid INPUT_FILE in config.py\n%s' % (infile, e)
+        exit(1)
+
+    if config.RUN_FILTER['2c']:
         problem2c(data_filtered)
 
-    if RUN_FILTER['2e'] or RUN_FILTER['2f']:
+    if config.RUN_FILTER['2e'] or config.RUN_FILTER['2f']:
         d_tree = problem2e(train_data, test_data)
         print '\tFinished training decision tree'
-        if RUN_FILTER['2f']:
-            test_results = problem2f(test_data, d_tree)
-
-    #decision_tree = dt.train(train_data)
-    #test_results = dt.test(decision_tree, test_data)
-
-    #print test_results
+        if config.RUN_FILTER['2f']:
+            problem2f(test_data, d_tree)
 
 if __name__ == '__main__':
     main()
