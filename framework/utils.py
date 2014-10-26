@@ -13,13 +13,13 @@ def entropy(class_set):
     )
 
 
-def information_gain(full_set, subset_left, subset_right):
-    H_of_set, set_length = entropy(full_set), len(full_set)
+def information_gain(base_entropy, full_set_length, subset_left, subset_right):
+    #H_of_set, set_length = entropy(full_set), len(full_set)
     H_of_left, left_length = entropy(subset_left), len(subset_left)
     H_of_right, right_length = entropy(subset_right), len(subset_right)
-    return H_of_set - (
-        (left_length / set_length * H_of_left) +
-        (right_length / set_length * H_of_right)
+    return base_entropy - (
+        (left_length / full_set_length * H_of_left) +
+        (right_length / full_set_length * H_of_right)
     )
 
 

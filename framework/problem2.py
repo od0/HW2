@@ -1,8 +1,9 @@
 from collections import OrderedDict
 
-import scan
 import utils
+import scan
 import config
+import decision_tree
 from unigrams import ReviewSample
 
 
@@ -33,14 +34,7 @@ def report_top_n_words(review_samples, n):
 
 
 def generate_unigrams(data):
-    results = []
-    for sample in data:
-        results.append(ReviewSample(sample))
-        #sample_unigrams = utils.get_unigram(sample[config.REVIEW_INDEX])
-        #sample_unigrams.append(data[config.SCORE_INDEX])
-        #results.append((sample_unigrams, sample[config.SCORE_INDEX]))
-    return results
-    #return [utils.get_unigram(sample[config.REVIEW_INDEX]) for sample in data]
+    return [ReviewSample(sample) for sample in data]
 
 
 def aggregate_unigrams(all_samples, top_num):
@@ -77,13 +71,17 @@ def problem2c(data):
     report_top_n_words(review_samples, 30)
 
 
-def problem2d(train_data):
+def problem2e(train_data):
     review_samples = generate_unigrams(train_data)
     positive_counts, top_positive = samples_by_label(review_samples, 500, 1)
     negative_counts, top_negative = samples_by_label(review_samples, 500, 0)
-    feature
+    feature_set = derive_features(top_positive, top_negative)
     print
-    print 'H(S) = %0.5f' % utils.entropy([sample.rating for sample in review_samples])
+    print 'Starting H(S) = %0.5f' % utils.entropy([sample.rating for sample in review_samples])
+
+    dt_classifier = decision_tree.train(review_samples, feature_set)
+
+    #decision_tree.train(review_samples, feature_set)
 
 
 def derive_features(positive_counts, negative_counts):
@@ -99,29 +97,12 @@ def derive_features(positive_counts, negative_counts):
     return feature_counts
 
 
-'''def normalize_data_set(length, data, features, unigram_list):
-    #word_count = sum([record[config.WORD_COUNT_INDEX] for record in unigram_list])
-    data_set = []
-    class_set = []
-    for i in range(length):
-        sample = unigram_list[i]
-        feature_vector = [
-            sample[config.UNIGRAMS_INDEX].setdefault(word, 0)
-            for word in features
-        ]
-        data_set.append(feature_vector)
-        class_set.append(data[i][config.SCORE_INDEX])
-
-    return data_set, class_set'''
-
-
 RUN_FILTER = {
     'full': False,
-    '2a': True,
-    '2b': True,
-    '2c': True,
-    '2d': True,
-    '2e': False,
+    '2a': False,
+    '2b': False,
+    '2c': False,
+    '2e': True,
     '2f': False
 }
 
@@ -136,8 +117,8 @@ def main():
     data, data_filtered, train_data, test_data = None, None, None, None
     if RUN_FILTER['2a'] or RUN_FILTER['2b']:
         data = scan.scan(infile, exclude_stopwords=False, binary_label=True)
-        length = len(data)
-    if RUN_FILTER['2c'] or RUN_FILTER['2d'] or RUN_FILTER['2e'] or RUN_FILTER['2f']:
+        #length = len(data)
+    if RUN_FILTER['2c'] or RUN_FILTER['2e'] or RUN_FILTER['2f']:
         data_filtered = scan.scan(infile, exclude_stopwords=True, binary_label=True)
         length = len(data_filtered)
         train_data = data_filtered[:int(length*.8)]
@@ -154,9 +135,8 @@ def main():
     if RUN_FILTER['2c']:
         problem2c(data_filtered)
 
-    if RUN_FILTER['2d']:
-        problem2d(train_data)
-
+    if RUN_FILTER['2e']:
+        problem2e(train_data)
 
     #decision_tree = dt.train(train_data)
     #test_results = dt.test(decision_tree, test_data)

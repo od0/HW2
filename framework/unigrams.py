@@ -1,6 +1,5 @@
 import config
 import utils
-import scan
 
 
 class ReviewSample(object):
@@ -11,5 +10,9 @@ class ReviewSample(object):
         self.rating = datum[config.SCORE_INDEX]
 
     @property
-    def words(self):
+    def word_list(self):
         return self.unigrams.keys()
+
+    def __repr__(self):
+        return ("<ReviewSample(rating=%d, word_count=%d, unigrams=%s)>" %
+                (self.rating, self.word_count, self.unigrams))
