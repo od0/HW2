@@ -1,8 +1,11 @@
 import logging
 import datetime
 
+import numpy as np
+
 import config
 import utils
+
 
 logStart = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 logging.basicConfig(
@@ -37,20 +40,22 @@ class DecisionTree(object):
             self.node_label, self.desc, self.depth, len(review_set)
         ))
 
+    #@profile
     def decision(self, review_set, features, depth):
-        entropy = utils.entropy([sample.rating for sample in review_set])
+        entropy = utils.entropy(np.array([sample.rating for sample in review_set]))
 
         if 1 > entropy > 0 and len(features) > 0:
             full_set_length = len(review_set)
-            # max_info_gain contains (info_gain, word, left_set, right_set)
+            # Max Info Gain holds 4 values:
+            #   (info_gain, word, left_set, right_set)
             max_info_gain = (0, None, None, None)
 
             for word in features:
-                left_labels, right_labels, left_indices = DecisionTree.split(word, review_set)
+                left_labels, right_labels, left_indices, right_indices = DecisionTree.split(word, review_set)
                 info_gain = utils.information_gain(entropy, full_set_length, left_labels, right_labels)
                 if info_gain > max_info_gain[0]:
-                    left_set = [sample for (i, sample) in enumerate(review_set) if i in left_indices]
-                    right_set = [sample for (i, sample) in enumerate(review_set) if i not in left_indices]
+                    left_set = [review_set[i] for i in left_indices]
+                    right_set = [review_set[i] for i in right_indices]
                     max_info_gain = (info_gain, word, left_set, right_set)
 
             if max_info_gain[0] > 0:
@@ -82,17 +87,20 @@ class DecisionTree(object):
             self.set_label(review_set)
 
     @classmethod
+    #@profile
     def split(cls, word, review_set):
-        left_indices = [i for (i, sample) in enumerate(review_set) if word in sample.word_list]
-        left = [sample.rating for (i, sample) in enumerate(review_set) if i in left_indices]
-        right = [sample.rating for (i, sample) in enumerate(review_set) if i not in left_indices]
-        return left, right, left_indices
+        left_indices = frozenset([i for (i, sample) in enumerate(review_set) if word in sample.word_set])
+        right_indices = frozenset(range(len(review_set))).difference(left_indices)
+        left = np.array([review_set[i].rating for i in left_indices])
+        right = np.array([review_set[i].rating for i in right_indices])
+        return left, right, left_indices, right_indices
 
     def __repr__(self):
         return "<DecisionTree()> %s" % (self.desc if self.desc else '')
 
 
 # http://en.wikipedia.org/wiki/ID3_algorithm
+#@profile
 def train(review_samples, feature_set):
     decision_tree = DecisionTree(review_samples, feature_set)
     return decision_tree
@@ -104,7 +112,7 @@ def test(review_samples, decision_tree):
             sample.predicted_rating = decision_tree.node_label
         return
     left_indices = [i for (i, sample) in enumerate(review_samples)
-                    if decision_tree.split_word in sample.word_list]
+                    if decision_tree.split_word in sample.word_set]
     left_set = [sample for (i, sample) in enumerate(review_samples) if i in left_indices]
     right_set = [sample for (i, sample) in enumerate(review_samples) if i not in left_indices]
     if left_set:

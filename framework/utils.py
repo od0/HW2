@@ -1,12 +1,15 @@
 from __future__ import division
 import math
 
+import numpy as np
+
 
 # decision tree stuff
+#@profile
 def entropy(class_set):
-    total = len(class_set)
-    positives = len([r for r in class_set if r])
-    negatives = len([r for r in class_set if not r])
+    total = class_set.size
+    positives = np.flatnonzero(class_set).size
+    negatives = total - positives
     if positives and negatives:
         return - (
             positives/total * math.log(positives/total) +
@@ -17,10 +20,10 @@ def entropy(class_set):
         return 0
 
 
+#@profile
 def information_gain(base_entropy, full_set_length, subset_left, subset_right):
-    #H_of_set, set_length = entropy(full_set), len(full_set)
-    H_of_left, left_length = entropy(subset_left), len(subset_left)
-    H_of_right, right_length = entropy(subset_right), len(subset_right)
+    H_of_left, left_length = entropy(subset_left), subset_left.size
+    H_of_right, right_length = entropy(subset_right), subset_right.size
     return base_entropy - (
         (left_length / full_set_length * H_of_left) +
         (right_length / full_set_length * H_of_right)

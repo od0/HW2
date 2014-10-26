@@ -4,6 +4,8 @@ import logging
 import datetime
 import time
 
+import numpy as np
+
 import utils
 import scan
 import config
@@ -97,7 +99,8 @@ def problem2e(train_data):
     feature_set = derive_features(top_positive, top_negative)
     print ('\tDecision tree feature/attribute set includes %d total words' % len(feature_set))
     print ('\tStarting entropy of the review set with %d samples is %0.5f' %
-           (len(review_samples), utils.entropy([sample.rating for sample in review_samples])))
+        (len(review_samples), utils.entropy(np.array([sample.rating for sample in review_samples]))))
+           #(len(review_samples), utils.entropy([sample.rating for sample in review_samples])))
     print
     print
 
