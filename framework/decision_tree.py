@@ -29,7 +29,7 @@ class DecisionTree(object):
         #self.decision(review_samples, feature_set, depth)
 
     def is_label(self):
-        return self.node_label == 0 or self.node_label == 1
+        return not self.node_label is None
 
     def set_label(self, review_set):
         num_positive = len([sample.rating for sample in review_set if sample.rating == 1])
@@ -63,8 +63,8 @@ class DecisionTree(object):
                 self.split_word = max_info_gain[1]
                 # Exclude this word/attribute
                 features.remove(self.split_word)
-                logging.debug('Splitting on %s (info gain %0.5f, branch size %d)' % (
-                    self.split_word, max_info_gain[0], len(review_set)
+                logging.debug('Splitting on %s (info gain %0.5f, branch size %d) (node_label is %s)' % (
+                    self.split_word, max_info_gain[0], len(review_set), self.node_label
                 ))
 
                 return max_info_gain
@@ -110,6 +110,7 @@ def train(review_samples, feature_set):
     #decision_tree = DecisionTree(review_samples, feature_set)
     tree_queue = deque()
     decision_tree = DecisionTree()
+    root = decision_tree
     result = decision_tree.decision(review_samples, feature_set)
     if result:
         extend_tree(result, tree_queue, decision_tree)
@@ -122,7 +123,7 @@ def train(review_samples, feature_set):
          if result:
             extend_tree(result, tree_queue, decision_tree)
 
-    return decision_tree
+    return root
 
 
 def extend_tree(result, tree_queue, decision_tree):
@@ -147,15 +148,29 @@ def extend_tree(result, tree_queue, decision_tree):
 
 
 def test(review_samples, decision_tree):
-    if decision_tree.is_label():
+    if not decision_tree.is_label():
+        left_indices = frozenset([
+            i for (i, sample) in enumerate(review_samples) 
+            if decision_tree.split_word in sample.word_set
+            ])
+        right_indices = frozenset(range(len(review_samples))).difference(left_indices)
+        #left_indices = [i for (i, sample) in enumerate(review_samples)
+                        #if decision_tree.split_word in sample.word_set]
+
+        #left_set = [sample for (i, sample) in enumerate(review_samples) if i in left_indices]
+        #right_set = [sample for (i, sample) in enumerate(review_samples) if i not in left_indices]
+        left_set = [review_samples[i] for i in left_indices]
+        right_set = [review_samples[i] for i in right_indices]
+        logging.debug('Test split on word=%s (left=%d, right=%d' % (
+            decision_tree.split_word, len(left_set), len(right_set)
+            ))
+        if left_set:
+            test(left_set, decision_tree.left)
+        if right_set:
+            test(right_set, decision_tree.right)
+    else:
+        # Found label
+        logging.debug('Applying label=%d for %d total samples.' % (decision_tree.node_label, len(review_samples)))
         for sample in review_samples:
             sample.predicted_rating = decision_tree.node_label
         return
-    left_indices = [i for (i, sample) in enumerate(review_samples)
-                    if decision_tree.split_word in sample.word_set]
-    left_set = [sample for (i, sample) in enumerate(review_samples) if i in left_indices]
-    right_set = [sample for (i, sample) in enumerate(review_samples) if i not in left_indices]
-    if left_set:
-        test(left_set, decision_tree.left)
-    if right_set:
-        test(right_set, decision_tree.right)
