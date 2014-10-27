@@ -1,5 +1,6 @@
 import logging
 import datetime
+from collections import deque
 
 import numpy as np
 
@@ -16,7 +17,7 @@ logging.basicConfig(
 
 
 class DecisionTree(object):
-    def __init__(self, review_samples, feature_set, depth=0, desc=None):
+    def __init__(self, depth=0, desc=None):
         # node_label takes the values 0, 1, None. If has the values 0 or 1, then this is a leaf
         self.node_label = None
         self.left = None
@@ -25,7 +26,7 @@ class DecisionTree(object):
         self.split_word = None
         if desc:
             self.desc = desc
-        self.decision(review_samples, feature_set, depth)
+        #self.decision(review_samples, feature_set, depth)
 
     def is_label(self):
         return self.node_label == 0 or self.node_label == 1
@@ -41,7 +42,7 @@ class DecisionTree(object):
         ))
 
     #@profile
-    def decision(self, review_set, features, depth):
+    def decision(self, review_set, features):
         entropy = utils.entropy(np.array([sample.rating for sample in review_set]))
 
         if 1 > entropy > 0 and len(features) > 0:
@@ -66,8 +67,10 @@ class DecisionTree(object):
                     self.split_word, max_info_gain[0], len(review_set)
                 ))
 
+                return max_info_gain
+
                 # Create 2 new DTrees
-                self.left = DecisionTree(
+                '''self.left = DecisionTree(
                     max_info_gain[2], features,
                     depth=depth+1,
                     desc='\"%s\" appears' % self.split_word
@@ -76,7 +79,7 @@ class DecisionTree(object):
                     max_info_gain[3], features,
                     depth=depth+1,
                     desc='\"%s\" does not appear' % self.split_word
-                )
+                )'''
 
             else:
                 # None of the words provided info gain > 0. No further splitting is possible.
@@ -85,6 +88,8 @@ class DecisionTree(object):
 
         else:
             self.set_label(review_set)
+
+        return None
 
     @classmethod
     #@profile
@@ -102,8 +107,43 @@ class DecisionTree(object):
 # http://en.wikipedia.org/wiki/ID3_algorithm
 #@profile
 def train(review_samples, feature_set):
-    decision_tree = DecisionTree(review_samples, feature_set)
+    #decision_tree = DecisionTree(review_samples, feature_set)
+    tree_queue = deque()
+    decision_tree = DecisionTree()
+    result = decision_tree.decision(review_samples, feature_set)
+    if result:
+        extend_tree(result, tree_queue, decision_tree)
+
+    next_rec = None
+    while len(tree_queue) > 0:
+         next_rec = tree_queue.popleft()
+         decision_tree = next_rec.get('tree')
+         result = decision_tree.decision(next_rec.get('reviews_set'), feature_set)
+         if result:
+            extend_tree(result, tree_queue, decision_tree)
+
     return decision_tree
+
+
+def extend_tree(result, tree_queue, decision_tree):
+    #decision_tree.split_word = result[1]
+    decision_tree.left = DecisionTree(
+        depth=decision_tree.depth+1,
+        desc='\"%s\" appears' % decision_tree.split_word
+        )
+    tree_queue.append({
+        'tree': decision_tree.left, 
+        'reviews_set': result[2]
+        })
+
+    decision_tree.right = DecisionTree(
+        depth=decision_tree.depth+1,
+        desc='\"%s\" does not appear' % decision_tree.split_word
+        )
+    tree_queue.append({
+        'tree': decision_tree.right,
+        'reviews_set': result[3]
+        })
 
 
 def test(review_samples, decision_tree):

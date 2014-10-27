@@ -1,5 +1,6 @@
-INPUT_FILE_SAMPLE = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
-               'hw2-bucket/data/finefoods-small.txt')
+INPUT_FILE_SAMPLE = '/Users/sean/Sync/cornell/modern-analytics-fall-2014/hw2-bucket/data/finefoods-small.txt'
+#INPUT_FILE_SAMPLE = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
+               #'hw2-bucket/data/finefoods-small.txt')
 #INPUT_FILE_SAMPLE = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
                #'hw2-bucket/data/finefoods-micro.txt')
 INPUT_FILE = ('/home/sean/Sync/cornell/modern-analytics-fall-2014/'
@@ -13,7 +14,7 @@ LABEL_DESC = ['Negative', 'Positive']
 
 RUN_FILTER = {
     'debug': True,
-    'full': True,
+    'full': False,
     '2a': True,
     '2b': True,
     '2c': True,
