@@ -3,6 +3,7 @@ from collections import OrderedDict
 import logging
 import datetime
 import time
+import os
 
 import numpy as np
 
@@ -12,6 +13,9 @@ import config
 import decision_tree
 from unigrams import ReviewSample
 
+
+if not os.path.exists('logs'):
+    os.mkdir('logs')
 logStart = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 logging.basicConfig(
     filename='logs/%s_decision.log' % logStart,
@@ -115,7 +119,9 @@ def derive_features(positive_counts, negative_counts):
 
 
 def problem2f(test_data, d_tree):
-    print '2f) Predicting scores for test %d review samples with decision tree' % len(test_data)
+    print ('2f) Predicting scores for test %d review samples with '
+        'decision tree' % len(test_data)
+    )
     review_samples = generate_unigrams(test_data)
     decision_tree.test(review_samples, d_tree)
     total = len(test_data)
@@ -128,33 +134,38 @@ def problem2f(test_data, d_tree):
     false_negative = len([sample for sample in review_samples
                          if sample.rating == 1 and sample.predicted_rating == 0])
 
-    #for i, sample in enumerate(review_samples):
-        #logging.debug('#%3d: Real: %d, Predicted: %d' % (
-            #i+1, sample.rating, sample.predicted_rating
-        #))
-
     print 'Finished testing samples'
     print '%0.5f Overall accuracy (%d/%d)' % (
         (true_positive + true_negative) / total, true_positive + true_negative, total
     )
     try:
-        print '\t%0.5f True Positive Rate (Sensitivity)' % (true_positive / (true_positive + false_negative))
+        print '\t%0.5f True Positive Rate (Sensitivity)' % (
+            true_positive / (true_positive + false_negative)
+        )
     except ZeroDivisionError:
         pass
     try:
-        print '\t%0.5f True Negative Rate (Specificity)' % (true_negative / (false_positive + true_negative))
+        print '\t%0.5f True Negative Rate (Specificity)' % (
+            true_negative / (false_positive + true_negative)
+        )
     except ZeroDivisionError:
         pass
     try:
-        print '\t%0.5f Positive Predictive Value (Precision)' % (true_positive / (true_positive + false_positive))
+        print '\t%0.5f Positive Predictive Value (Precision)' % (
+            true_positive / (true_positive + false_positive)
+        )
     except ZeroDivisionError:
         pass
     try:
-        print '\t%0.5f False Positive Rate (Fall-Out)' % (false_positive / (false_positive + true_negative))
+        print '\t%0.5f False Positive Rate (Fall-Out)' % (
+            false_positive / (false_positive + true_negative)
+        )
     except ZeroDivisionError:
         pass
     try:
-        print '\t%0.5f False Negative Rate' % (false_negative / (true_positive + false_negative))
+        print '\t%0.5f False Negative Rate' % (
+            false_negative / (true_positive + false_negative)
+        )
     except ZeroDivisionError:
         pass
     print
