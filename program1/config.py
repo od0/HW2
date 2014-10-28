@@ -2,6 +2,11 @@ __author__ = 'aub3'
 """
 All constants should go here.
 """
+bins = 20
+minlong = -75
+maxlong = -70
+minlat = 40
+maxlat = 41
 
 EXAMPLE_DATA = "data/example_data.csv" # small data files (ideally < 5 MB) should be stored in data folder
 TRIP_DATA_1 = "../../data/trip_data_1.csv" # Large data files can be outside your directory structure
