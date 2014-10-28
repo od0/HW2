@@ -80,11 +80,12 @@ class DecisionTree(object):
 
     @classmethod
     def maximize_info_gain(cls, review_set, entropy, features):
-        full_set_length = len(review_set)
-
+        # Find the word in features with the highest information gain
+        
         max_info_gain = 0
         split_word, left_set, right_set = None, None, None
-
+        full_set_length = len(review_set)
+        
         for word in features:
             left_labels, right_labels, left_indices, right_indices = DecisionTree.split(word, review_set)
             info_gain = utils.information_gain(entropy, full_set_length, left_labels, right_labels)
@@ -93,7 +94,6 @@ class DecisionTree(object):
                 split_word = word
                 left_set = [review_set[i] for i in left_indices]
                 right_set = [review_set[i] for i in right_indices]
-                #max_info_gain = (info_gain, word, left_set, right_set)
 
         return max_info_gain, split_word, left_set, right_set
 
@@ -113,7 +113,6 @@ class DecisionTree(object):
 # http://en.wikipedia.org/wiki/ID3_algorithm
 #@profile
 def train(review_samples, feature_set):
-    #decision_tree = DecisionTree(review_samples, feature_set)
     tree_queue = deque()
     decision_tree = DecisionTree()
     root = decision_tree
@@ -133,6 +132,9 @@ def train(review_samples, feature_set):
 
 
 def extend_tree(tree_queue, decision_tree, left_set, right_set):
+    # Adds to new trees to the left and right nodes of the current tree
+    # Left trees always "have" the split word
+    # Right trees are "missing" the split word
     decision_tree.left = DecisionTree(
         depth=decision_tree.depth+1,
         old_desc=decision_tree.desc,

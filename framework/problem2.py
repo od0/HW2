@@ -128,13 +128,13 @@ def problem2f(test_data, d_tree):
     false_negative = len([sample for sample in review_samples
                          if sample.rating == 1 and sample.predicted_rating == 0])
 
-    for i, sample in enumerate(review_samples):
-        logging.debug('#%3d: Real: %d, Predicted: %d' % (
-            i+1, sample.rating, sample.predicted_rating
-        ))
+    #for i, sample in enumerate(review_samples):
+        #logging.debug('#%3d: Real: %d, Predicted: %d' % (
+            #i+1, sample.rating, sample.predicted_rating
+        #))
 
     print 'Finished testing samples'
-    print '%0.5f Oveall accuracy (%d/%d)' % (
+    print '%0.5f Overall accuracy (%d/%d)' % (
         (true_positive + true_negative) / total, true_positive + true_negative, total
     )
     try:
