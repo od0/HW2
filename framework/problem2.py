@@ -129,10 +129,9 @@ def problem2f(test_data, d_tree):
                          if sample.rating == 1 and sample.predicted_rating == 0])
 
     for i, sample in enumerate(review_samples):
-        logging.debug('#%3d: Real: %d, Predicted: %d\n\tUnigrams:%s' % (
-            i+1, sample.rating, sample.predicted_rating,
-            sample.unigrams
-            ))
+        logging.debug('#%3d: Real: %d, Predicted: %d' % (
+            i+1, sample.rating, sample.predicted_rating
+        ))
 
     print 'Finished testing samples'
     print '%0.5f Oveall accuracy (%d/%d)' % (
