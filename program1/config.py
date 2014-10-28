@@ -12,6 +12,7 @@ EXAMPLE_DATA = "data/example_data.csv" # small data files (ideally < 5 MB) shoul
 TRIP_DATA_1 = "../../data/trip_data_1.csv" # Large data files can be outside your directory structure
 TRIP_DATA_2 = "../../data/trip_data_2.csv" # Large data files can be outside your directory structure
 TRAIN_DATA = "../../data/train_data.csv" # contains every 20th trip from trip_data_2.csv
+TEST_DATA = "../../data/test_data.csv" # contains first 100,000 trips from trip_data_1.csv
 
 FILE_FORMAT ={
     '0':'medallion',
