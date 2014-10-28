@@ -1,0 +1,92 @@
+Loading data from file
+2a) 10 Example review and label pairs from data: 
+	Review: part of my greek yogurt breakfast my morning breakfast br br a six ounce container of fage 2 plain greek yogurt mixed with a sliced banana and 3 or 4 sliced strawberries add a teaspoon of splenda brown sugar blend and it s nicely sweetened and a healthy way for me to start my day i started this breakfast routine over a year ago and haven t grown tired of it it was suggested at a weight watchers meeting as a very low points breakfast it has easily become my standard for breakfast so much so that i will bring a bag of splenda with me on vacations in case i have trouble finding it at the store i also openly admit that perhaps i m too hung up on this routine but it s so satisfying in the morning that i don t care br br i haven t personally ever cooked with this brown sugar blend but as a topping on my yogurt or a baked sweet potato it s been great
+	Label: 1 (Positive)
+	Review: best brown sugar replacement this taste just like brown sugar with less sugar br i use this for everything that requires sugar baking est i use less of this than is required like if it says use 1 2 cup i use 1 3 of splenda brown sugar
+	Label: 1 (Positive)
+	Review: yummy good substitute for brown sugar this is a most excellent sugar substitute for those who watch their sugar intake br br but and this is important because one does tend to follow recipes to a fault you must use half as much as the recipe calls for which btw does not work as well as you d hope it s just not nearly as sweet cup for cup br br i make that up using extra splenda white because i use brown sugar for it s sweetness as well as the molasses flavor this is why i will only give it four stars because they could make it cup for cup by doing what i do and adding more splenda white so a baker could follow their recipe and not give it a second thought heaven knows they re charging enough for it br br i m sure you know this brown sugar is unrefined or molasses sugar you can make your own brown sugar by adding 1 tablespoon unsulfured molasses to 1 cup cane sugar and mixing it with a fork it comes out nice and fluffy and you can control how much caramel flavor it has and how much extra sugar too br br splenda brown sugar blend as it is is a very coarsely granulated splenda a little coarser than splenda white so the texture is better than what you might mix up on your own so for convenience you can t beat splenda brown sugar blend the splenda brand is superior in my opinion to the store brands that are popping up but ymmv and your store might have a really good version br br still and this accounts for a very good four stars you can always count on splenda for texture for flavor and consistency when you bake that counts for a lot in my book
+	Label: 1 (Positive)
+	Review: very cool it has been mentioned that you only use half the splenda blend than regular brown sugar which is very cool the only problem i have run into is when i need brown sugar for volume making a crust for my rhubarb crunch half does not work so i end up using regular brown sugar rather than double splenda other than that it works like a charm and you can hardly taste the difference
+	Label: 1 (Positive)
+	Review: tastes great works as promised splenda contains real sugar you have to pay attention to the word blend in the title yes diabetics can eat it because it s only half or less the blood sugar elevating agent of the same volume of real sugar it s also why it tastes like real sugar and can be cooked unlike some sugar sustitutes a lot of non sucrose based sweetners are destroyed by heat br br what i ve found with this splenda brown sugar is even though it s bulked up so that it s supposed to be equivalent in volume to all sucrose it s really very very sweet so i do not substitute it 1 1 for sugar i use much less than i would real sugar
+	Label: 1 (Positive)
+	Review: wouldn t be without it first i just found out it calls for half the amount of splenda blend compared to regular brown sugar by reading these reviews in spite of that i still give it an excellent score br br i ve always used brown sugars of all kinds in my coffee when at the store a few weeks ago i was looking for a lower calorie sweetener for my coffee and happened to buy this splenda brown sugar blend i ve been using it in my coffee since and love it the only difference i could tell was it was so much sweeter than my usual coffee that when i got close to the bottom of the cup i would pour more coffee into it to stretch the sweetness now i know why it s twice as sweet as regular brown sugar br br just ordered the 4 pack and this should tide me over for a while adding it to teas and coffees delicious it s also cheaper on amazon xoxox
+	Label: 1 (Positive)
+	Review: tastes great i use this on my oatmeal every morning i can t tell the difference between this and brown sugar no after taste
+	Label: 1 (Positive)
+	Review: easy to use taste is very good i love this product now that the holidaze are falling apon us and i am a diabetic it s nice to be able to have treats that i can eat and not feel deprived this is a great brown sugar sub it is the best i have tasted it works like regular brn sugar so if your on a diet or diabetic like me your prayers have been answered
+	Label: 1 (Positive)
+	Review: smithinsight there is nothing better than a huge baked sweet potato with real butter and splenda brown sugar totally covering the butter and sweet potato makes me want to fix one right now
+	Label: 1 (Positive)
+	Review: really good can t tell the difference the only difference i can see between using this blend and using brown sugar is that you don t get the usual sugar rush when you eat the result cookies and pies made with this splenda blend which does contain some sugar taste the exactly the same as they did before great stuff and it s gluten free too
+	Label: 1 (Positive)
+
+
+
+2b) Top words from 7374 sample reviews
+	Positive reviews:
+	#  1: the (17250x)
+	#  2: i (15394x)
+	#  3: and (12901x)
+	#  4: a (11715x)
+	#  5: it (9469x)
+	#  6: to (9297x)
+	#  7: of (7226x)
+	#  8: is (6696x)
+	#  9: this (6187x)
+	# 10: br (5576x)
+	# 11: for (5535x)
+	# 12: in (4866x)
+	# 13: my (4455x)
+	# 14: that (3851x)
+	# 15: you (3634x)
+	# 16: with (3544x)
+	# 17: are (3482x)
+	# 18: have (3369x)
+	# 19: but (3303x)
+	# 20: s (3013x)
+	# 21: they (2992x)
+	# 22: great (2909x)
+	# 23: good (2645x)
+	# 24: not (2628x)
+	# 25: these (2594x)
+	# 26: as (2570x)
+	# 27: on (2567x)
+	# 28: was (2564x)
+	# 29: t (2506x)
+	# 30: so (2421x)
+
+	Negative reviews:
+	#  1: the (7493x)
+	#  2: i (6124x)
+	#  3: a (4063x)
+	#  4: and (4059x)
+	#  5: it (3913x)
+	#  6: to (3532x)
+	#  7: of (3185x)
+	#  8: br (2665x)
+	#  9: is (2478x)
+	# 10: this (2349x)
+	# 11: not (2096x)
+	# 12: in (1852x)
+	# 13: for (1824x)
+	# 14: that (1778x)
+	# 15: but (1736x)
+	# 16: was (1462x)
+	# 17: t (1353x)
+	# 18: you (1301x)
+	# 19: my (1272x)
+	# 20: with (1210x)
+	# 21: s (1208x)
+	# 22: they (1096x)
+	# 23: like (1056x)
+	# 24: have (1047x)
+	# 25: as (1001x)
+	# 26: are (1000x)
+	# 27: so (908x)
+	# 28: on (880x)
+	# 29: taste (851x)
+	# 30: be (846x)
+
+
+Loading data from file (excluding stopwords)

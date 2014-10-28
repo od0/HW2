@@ -91,7 +91,7 @@ def problem2c(data):
 
 
 def problem2e(train_data):
-    print '2e) Beginning decision tree training using ID3 algorithm'
+    print '2e) Training decision tree using ID3 algorithm'
     review_samples = generate_unigrams(train_data)
     positive_counts, top_positive = samples_by_label(review_samples, 500, 1)
     negative_counts, top_negative = samples_by_label(review_samples, 500, 0)
@@ -127,15 +127,36 @@ def problem2f(test_data, d_tree):
                          if sample.rating == 0 and sample.predicted_rating == 0])
     false_negative = len([sample for sample in review_samples
                          if sample.rating == 1 and sample.predicted_rating == 0])
+
+    for i, sample in enumerate(review_samples):
+        logging.debug('#%3d: Real: %d, Predicted: %d' % (
+            i+1, sample.rating, sample.predicted_rating
+        ))
+
     print 'Finished testing samples'
     print '%0.5f Oveall accuracy (%d/%d)' % (
         (true_positive + true_negative) / total, true_positive + true_negative, total
     )
-    print '\t%0.5f True Positive Rate (Sensitivity)' % (true_positive / (true_positive + false_negative))
-    print '\t%0.5f True Negative Rate (Specificity)' % (true_negative / (false_positive + true_negative))
-    print '\t%0.5f Positive Predictive Value (Precision)' % (true_positive / (true_positive + false_positive))
-    print '\t%0.5f False Positive Rate (Fall-Out)' % (false_positive / (false_positive + true_negative))
-    print '\t%0.5f False Negative Rate' % (false_negative / (true_positive + false_negative))
+    try:
+        print '\t%0.5f True Positive Rate (Sensitivity)' % (true_positive / (true_positive + false_negative))
+    except ZeroDivisionError:
+        pass
+    try:
+        print '\t%0.5f True Negative Rate (Specificity)' % (true_negative / (false_positive + true_negative))
+    except ZeroDivisionError:
+        pass
+    try:
+        print '\t%0.5f Positive Predictive Value (Precision)' % (true_positive / (true_positive + false_positive))
+    except ZeroDivisionError:
+        pass
+    try:
+        print '\t%0.5f False Positive Rate (Fall-Out)' % (false_positive / (false_positive + true_negative))
+    except ZeroDivisionError:
+        pass
+    try:
+        print '\t%0.5f False Negative Rate' % (false_negative / (true_positive + false_negative))
+    except ZeroDivisionError:
+        pass
     print
     print
 
