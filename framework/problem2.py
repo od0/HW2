@@ -134,40 +134,31 @@ def problem2f(test_data, d_tree):
     false_negative = len([sample for sample in review_samples
                          if sample.rating == 1 and sample.predicted_rating == 0])
 
-    print 'Finished testing samples'
-    print '%0.5f Overall accuracy (%d/%d)' % (
-        (true_positive + true_negative) / total, true_positive + true_negative, total
+    print '%0.5f Accuracy (%d/%d)' % (
+        (true_positive + true_negative) / ((true_positive + false_negative) + (true_negative + false_positive)), true_positive + true_negative, total
     )
+    print ('\n\tTrue Positives: %3d\n\tFalse Positives: %3d'
+            '\n\tTrue Negatives: %3d\n\tFalse Negativeis: %3d\n' % (
+        true_positive, false_positive, true_negative, false_negative
+    ))
     try:
         print '\t%0.5f True Positive Rate (Sensitivity)' % (
             true_positive / (true_positive + false_negative)
         )
-    except ZeroDivisionError:
-        pass
-    try:
         print '\t%0.5f True Negative Rate (Specificity)' % (
             true_negative / (false_positive + true_negative)
         )
-    except ZeroDivisionError:
-        pass
-    try:
         print '\t%0.5f Positive Predictive Value (Precision)' % (
             true_positive / (true_positive + false_positive)
         )
-    except ZeroDivisionError:
-        pass
-    try:
         print '\t%0.5f False Positive Rate (Fall-Out)' % (
             false_positive / (false_positive + true_negative)
         )
-    except ZeroDivisionError:
-        pass
-    try:
         print '\t%0.5f False Negative Rate' % (
             false_negative / (true_positive + false_negative)
         )
     except ZeroDivisionError:
-        pass
+        print 'ERROR: Cannot divide by 0'
     print
     print
 

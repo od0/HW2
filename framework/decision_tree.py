@@ -1,12 +1,15 @@
 import logging
 import datetime
 from collections import deque
+import os
 
 import numpy as np
 
 import config
 import utils
 
+if not os.path.exists('logs'):
+    os.mkdir('logs')
 logStart = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 logging.basicConfig(
     filename='logs/%s_decision.log' % logStart,
