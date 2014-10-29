@@ -1,6 +1,7 @@
 import logging
 import datetime
 from collections import deque
+from multiprocessing import Process, Queue
 import os
 
 import numpy as np
@@ -84,27 +85,79 @@ class DecisionTree(object):
         return left_set, right_set
 
     @classmethod
+    def parallel_split(cls, split_queue, ig_queue, review_set):
+        while True:
+            word = split_queue.get()
+            if (word != 'STOP'):
+                result = DecisionTree.split(word, review_set)
+                ig_queue.put((result, word))
+            else:
+                ig_queue.put('STOP')
+                break
+        return
+
+    @classmethod
+    def parallel_ig(cls, queue, length, entropy, result_queue):
+        while True:
+            item = queue.get()
+            if (item != 'STOP'):
+                try:
+                    left_labels = item[0][0]
+                    left_indices = item[0][2]
+                    right_labels = item[0][1]
+                    right_indices = item[0][3]
+                    word = item[1]
+                    info_gain = utils.information_gain(entropy, length, left_labels, right_labels)
+                    one_result = {
+                        'gain': info_gain, 
+                        'word': word,
+                        #'left': left_indices
+                        #'right': right_indices
+                    }
+                    result_queue.put(one_result)
+                except:
+                    pass
+            else:
+                break
+
+    @classmethod
     def maximize_info_gain(cls, review_set, entropy, features):
         # Find the word in features with the highest information gain
-        
-        max_info_gain = 0
         split_word, left_set, right_set = None, None, None
         full_set_length = len(review_set)
         
-        for word in features:
-            left_labels, right_labels, left_indices, right_indices = (
-                DecisionTree.split(word, review_set)
-            )
-            info_gain = utils.information_gain(
-                entropy, full_set_length, left_labels, right_labels
-            )
-            if info_gain > max_info_gain:
-                max_info_gain = info_gain
-                split_word = word
-                left_set = [review_set[i] for i in left_indices]
-                right_set = [review_set[i] for i in right_indices]
+        split_queue = Queue()
+        ig_queue = Queue()
+        result_queue = Queue()
 
-        return max_info_gain, split_word, left_set, right_set
+        split_process = Process(target=DecisionTree.parallel_split, 
+            args=(split_queue, ig_queue, review_set))
+        split_process.daemon = True
+        ig_process = Process(target=DecisionTree.parallel_ig, 
+            args=(ig_queue, full_set_length, entropy, result_queue))
+        ig_process.daemon = True
+
+        split_process.start()
+        ig_process.start()
+
+        for word in features:
+            split_queue.put(word)
+        split_queue.put('STOP')
+
+        split_process.join()
+        ig_process.join()
+
+        max_info_gain = {'gain': 0, 'word': ''}
+        while not result_queue.empty():
+            item = result_queue.get()
+            if item.get('gain') > max_info_gain.get('gain'):
+                max_info_gain = item
+        split_result = DecisionTree.split(max_info_gain.get('word'), review_set)
+        left_indices = split_result[2]
+        right_indices = split_result[3]
+        left_set = [review_set[i] for i in left_indices]
+        right_set = [review_set[i] for i in right_indices]
+        return max_info_gain.get('gain'), max_info_gain.get('word'), left_set, right_set
 
     @classmethod
     #@profile
@@ -115,7 +168,7 @@ class DecisionTree(object):
         right_indices = frozenset(range(len(review_set))).difference(left_indices)
         left = np.array([review_set[i].rating for i in left_indices])
         right = np.array([review_set[i].rating for i in right_indices])
-        return left, right, left_indices, right_indices
+        return (left, right, left_indices, right_indices)
 
     def __repr__(self):
         return "<DecisionTree()> %s" % (self.desc if self.desc else '')
