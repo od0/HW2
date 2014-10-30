@@ -3,6 +3,7 @@ from scipy import stats
 import csv as csv
 from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import mean_squared_error
+from sklearn import preprocessing
 from math import sqrt
 
 import config
@@ -40,15 +41,24 @@ def distance(point1,point2,length):
     return math.sqrt(distance)
 
 def scale_data(trndata,tstdata):
-	for x in range(trndata.shape[1]):
-		if x:
-			trndata[:,x] *= np.mean(trndata[:,x])
-			tstdata[:,x] *= np.mean(tstdata[:,x])
-	return trndata,tstdata
+    trndata[:,1:] *= preprocessing.normalize(trndata[:,1:])
+    tstdata[:,1:] *= preprocessing.normalize(tstdata[:,1:])
+    trndata[:,1:] *= preprocessing.scale(trndata[:,1:])
+    tstdata[:,1:] *= preprocessing.scale(tstdata[:,1:])
+    return trndata,tstdata
 
-def knn(trndata,tstdata,k):
-    nbrs = NearestNeighbors(n_neighbors=k, algorithm='brute').fit(trndata[:2000,1:])
-    distances,indices = nbrs.kneighbors(tstdata[:1000,1:])
+def knn(trndata,tstdata,k): 
+    indices = []
+    nbrs = NearestNeighbors(n_neighbors=k, algorithm='brute').fit(trndata[:20000,1:])
+    for x in range(tstdata.shape[0]):
+        if x > 10000:
+            break
+        new_distance,new_index = nbrs.kneighbors(tstdata[x,1:])
+        indices.append(new_index[0])
+
+    return indices
+
+def measure(trndata,tstdata,indices):
     print "Root Mean Squared Error: ", round(sqrt(mean_squared_error(tstdata[indices,0], trndata[indices,0])),1)
     coef,pval = stats.pearsonr(tstdata[indices,0], trndata[indices,0])
     print "Correlation Coefficient: ", round(coef[0],4)
@@ -59,11 +69,13 @@ def main():
     tstdata = load_data(config.TEST_DATA)
     #print trndata[:10,1:]
     print "Results using original data:"
-    knn(trndata,tstdata,1)
+    indices = knn(trndata,tstdata,1)
+    measure(trndata,tstdata,indices)
     trndata_scaled, tstdata_scaled = scale_data(trndata,tstdata)
     #print trndata[:10,1:]
     print "Results using scaled data:"
-    knn(trndata_scaled,tstdata_scaled,1)
+    indices = knn(trndata_scaled,tstdata_scaled,1)
+    measure(trndata,tstdata,indices)
     #print trndata.shape[1]
 
 if __name__ == '__main__':
