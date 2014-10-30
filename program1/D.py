@@ -67,16 +67,13 @@ def measure(trndata,tstdata,indices):
 def main():
     trndata = load_data(config.TRAIN_DATA)
     tstdata = load_data(config.TEST_DATA)
-    #print trndata[:10,1:]
     print "Results using original data:"
     indices = knn(trndata,tstdata,1)
     measure(trndata,tstdata,indices)
     trndata_scaled, tstdata_scaled = scale_data(trndata,tstdata)
-    #print trndata[:10,1:]
     print "Results using scaled data:"
     indices = knn(trndata_scaled,tstdata_scaled,1)
     measure(trndata,tstdata,indices)
-    #print trndata.shape[1]
 
 if __name__ == '__main__':
     main()
